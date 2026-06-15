@@ -16,8 +16,6 @@ generate_ram \
   -column_mux_ratio 4 \
   -read_ports 1 \
   -storage_cell sky130_fd_sc_hd__dfxtp_1 \
-  -power_pin VPWR \
-  -ground_pin VGND \
   -routing_layer {met1 0.48} \
   -ver_layer {met2 0.48 10} \
   -hor_layer {met3 0.48 7} \
@@ -28,6 +26,10 @@ generate_ram \
   -write_behavioral_verilog $behavioral_file
 
 write_verilog [make_result_file make_8x8_mux4_sky130.v]
+
+check_placement -verbose
+check_power_grid -net VDD
+check_power_grid -net VSS
 
 set lef_file [make_result_file make_8x8_mux4_sky130.lef]
 write_abstract_lef -bloat_occupied_layers $lef_file

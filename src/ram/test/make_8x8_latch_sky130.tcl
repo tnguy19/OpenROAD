@@ -15,8 +15,6 @@ generate_ram \
   -num_words 8 \
   -read_ports 1 \
   -use_latch 1 \
-  -power_pin VPWR \
-  -ground_pin VGND \
   -routing_layer {met1 0.48} \
   -ver_layer {met2 0.48 40} \
   -hor_layer {met3 0.48 20} \
@@ -28,6 +26,10 @@ generate_ram \
 
 set verilog_file [make_result_file make_8x8_latch_sky130.v]
 write_verilog $verilog_file
+
+check_placement -verbose
+check_power_grid -net VDD
+check_power_grid -net VSS
 
 set lef_file [make_result_file make_8x8_latch_sky130.lef]
 write_abstract_lef $lef_file
