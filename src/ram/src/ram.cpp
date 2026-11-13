@@ -1732,7 +1732,13 @@ void RamGen::findMasters()
             }
           }
           delete port_iter;
-          return has_latch_data && has_gate;
+          // add extra check to ensure that the latch is positive triggered
+          bool positive = false;
+          for (const auto& seq : cell->sequentials()) {
+            positive |= seq.isLatch() && seq.clock()
+                        && seq.clock()->op() == sta::FuncExpr::Op::port;
+          }
+          return has_latch_data && has_gate && positive;
         },
         "latch");
   }
@@ -2873,7 +2879,7 @@ void RamGen::generate(const int mask_size,
   const bool seg_supported = (column_mux_ratio == 1 || column_mux_ratio == 2)
                              && !banked_ && !and_or_read_ && bit_folds_ == 1
                              && rw_ports == 1 && r_ports_all == 0
-                             && w_ports == 0 && !use_latch_;
+                             && w_ports == 0;
   const bool forced_on
       = segmentation != 0 && (segmentation == 1 || rows_per_segment_req > 0);
   if (forced_on && !seg_supported) {
